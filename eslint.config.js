@@ -1,9 +1,18 @@
 import js from "@eslint/js";
 import prettierConfig from "eslint-config-prettier";
 import prettierPlugin from "eslint-plugin-prettier";
+import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 export default [
+  // 1️⃣ global ignore patterns
+  globalIgnores([
+    "dist/",
+    "node_modules/",
+    "src/generated/", // ignore generated Prisma client
+    "prisma.config.ts", // ignore Prisma config
+  ]),
+
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
@@ -18,7 +27,7 @@ export default [
       prettier: prettierPlugin,
     },
     rules: {
-      "prettier/prettier": "error",
+      "prettier/prettier": ["error", { endOfLine: "auto" }],
 
       // TypeScript best practices
       "@typescript-eslint/no-unused-vars": ["error"],
