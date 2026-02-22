@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { env } from "../config/env.js";
 
 interface JwtData extends JwtPayload {
   userId: string;
@@ -22,7 +23,7 @@ export const authenticateToken = (
       return res.status(401).json({ error: "Unauthorized: No token provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET!);
 
     req.user = decoded as JwtData;
 
