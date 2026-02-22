@@ -4,6 +4,7 @@ import express, { Application } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./config/env.js";
+import { globalErrorHandler } from "./middleware/error.middleware.js";
 import { authLimiter } from "./middleware/rateLimit.middleware.js";
 import authRouter from "./routes/auth.routes.js";
 import healthRouter from "./routes/health.route.js";
@@ -24,5 +25,8 @@ app.use(cookieParser());
 // Routes
 app.use("/health", healthRouter);
 app.use("/auth", authLimiter, authRouter);
+
+// Global error handler
+app.use(globalErrorHandler);
 
 export default app;
