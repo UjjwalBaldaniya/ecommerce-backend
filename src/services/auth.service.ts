@@ -13,6 +13,10 @@ interface AuthPayload {
   password: string;
 }
 
+interface JwtData {
+  userId: string;
+}
+
 export const registerUser = async ({ email, password }: AuthPayload) => {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) throw new Error("Email already exists");
@@ -41,4 +45,18 @@ export const loginUser = async ({ email, password }: AuthPayload) => {
   });
 
   return { accessToken, refreshToken };
+};
+
+export const handleRefreshToken = async (token: string) => {
+  if (!token) throw new Error("Refresh token required");
+
+  const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as JwtData;
+
+  const newAccessToken = jwt.sign(
+    { userId: decoded.userId },
+    process.env.JWT_ACCESS_SECRET!,
+    { expiresIn: ACCESS_EXP }
+  );
+
+  return { accessToken: newAccessToken };
 };
