@@ -17,6 +17,7 @@ interface AuthPayload {
 
 interface JwtData {
   userId: string;
+  role: string;
 }
 
 export const registerUser = async ({ email, password }: AuthPayload) => {
@@ -39,12 +40,20 @@ export const loginUser = async ({ email, password }: AuthPayload) => {
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) throw new ApiError(401, "Invalid credentials");
 
-  const accessToken = jwt.sign({ userId: user.id }, ACCESS_SECRET, {
-    expiresIn: ACCESS_EXP,
-  });
-  const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
-    expiresIn: REFRESH_EXP,
-  });
+  const accessToken = jwt.sign(
+    { userId: user.id, role: user.role },
+    ACCESS_SECRET,
+    {
+      expiresIn: ACCESS_EXP,
+    }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user.id, role: user.role },
+    REFRESH_SECRET,
+    {
+      expiresIn: REFRESH_EXP,
+    }
+  );
 
   return { accessToken, refreshToken };
 };
@@ -55,7 +64,7 @@ export const handleRefreshToken = async (token: string) => {
   const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET!) as JwtData;
 
   const newAccessToken = jwt.sign(
-    { userId: decoded.userId },
+    { userId: decoded.userId, role: decoded.role },
     env.JWT_ACCESS_SECRET!,
     { expiresIn: ACCESS_EXP }
   );
