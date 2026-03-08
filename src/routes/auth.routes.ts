@@ -5,6 +5,7 @@ import {
   register,
 } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { authorizeRoles } from "../middleware/role.middleware.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -26,5 +27,9 @@ router.get(
     );
   })
 );
+
+router.get("/admin-test", authenticate, authorizeRoles("ADMIN"), (_, res) => {
+  res.json({ message: "Welcome admin" });
+});
 
 export default router;
