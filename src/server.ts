@@ -2,22 +2,23 @@ import { env } from "./config/env.js";
 
 import app from "./app.js";
 import { prisma } from "./lib/prisma.js";
+import { logger } from "./utils/logger.js";
 
 const server = app.listen(env.PORT, () => {
-  console.log(`🚀 Server running on port ${env.PORT}`);
+  logger.info(`Server running on port ${env.PORT}`);
 });
 
 const shutdown = async (signal: string) => {
-  console.log(`🛑 Received ${signal}. Shutting down gracefully...`);
+  logger.info(`🛑 Received ${signal}. Shutting down gracefully...`);
 
   try {
     await prisma.$disconnect();
     server.close(() => {
-      console.log("✅ Database disconnected");
+      logger.info("✅ Database disconnected");
       process.exit(0);
     });
   } catch (error) {
-    console.error("❌ Error during shutdown", error);
+    logger.error(`❌ Error during shutdown, error: ${error}`);
     process.exit(1);
   }
 };

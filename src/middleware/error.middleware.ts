@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { env } from "../config/env.js";
 import { ApiError } from "../utils/ApiError.js";
+import { logger } from "../utils/logger.js";
 
 export const globalErrorHandler = (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ) => {
+  logger.error(err);
+
   let statusCode = 500;
   let message = "Internal Server Error";
 
@@ -19,6 +21,5 @@ export const globalErrorHandler = (
   res.status(statusCode).json({
     success: false,
     message,
-    ...(env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
